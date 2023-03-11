@@ -33,12 +33,12 @@ public class KakaoAddressSearchService {
 
     // 헤더 만들기
     HttpHeaders headers = new HttpHeaders();
-    headers.set(HttpHeaders.AUTHORIZATION, "KakoAK "+kakaoRestApiKey);
+    headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK "+kakaoRestApiKey);
 
     // httpEntity 생성
     HttpEntity httpEntity = new HttpEntity<>(headers);
 
-    // kakao api 호출 
+    // kakao api 호출
     return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoApiResponseDto.class).getBody();
 
   }

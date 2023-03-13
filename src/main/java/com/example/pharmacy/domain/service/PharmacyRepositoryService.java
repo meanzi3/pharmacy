@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -38,5 +39,10 @@ public class PharmacyRepositoryService {
     }
 
     entity.changePharmacyAddress(address);
+  }
+
+  @Transactional(readOnly = true) // readOnly 시 dirty checking 을 실행하지 않는다. => 성능 향상
+  public List<Pharmacy> findAll(){
+    return pharmacyRepository.findAll();
   }
 }

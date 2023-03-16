@@ -1,6 +1,7 @@
 package com.example.pharmacy.direction.service;
 
 import com.example.pharmacy.api.dto.DocumentDto;
+import com.example.pharmacy.api.service.KakaoCategorySearchService;
 import com.example.pharmacy.direction.entity.Direction;
 import com.example.pharmacy.direction.repository.DirectionRepository;
 import com.example.pharmacy.domain.dto.PharmacyDto;
@@ -29,6 +30,7 @@ public class DirectionService {
 
   private final PharmacySearchService pharmacySearchService;
   private final DirectionRepository directionRepository;
+  private final KakaoCategorySearchService kakaoCategorySearchService;
 
   @Transactional
   public List<Direction> saveAll(List<Direction> directionList){
@@ -59,6 +61,28 @@ public class DirectionService {
             .sorted(Comparator.comparing(Direction::getDistance))
             .limit(MAX_SEARCH_COUNT)
             .collect(Collectors.toList());
+  }
+
+  public List<Direction> buildDirectionListByCategoryApi(DocumentDto inputDocumentDto) {
+
+    if(Objects.isNull(inputDocumentDto)) return Collections.emptyList();
+
+    return kakaoCategorySearchService
+            .requestPharmacyCategorySearch(inputDocumentDto.getLatitude(), inputDocumentDto.getLongitude(), RADIUS_KM)
+            .getDocumentList()
+            .stream().map(resultDocumentDto ->
+                    Direction.builder()
+                            .inputAddress(inputDocumentDto.getAddressName())
+                            .inputLatitude(inputDocumentDto.getLatitude())
+                            .inputLongitude(inputDocumentDto.getLongitude())
+                            .targetPharmacyName(resultDocumentDto.getPlaceName())
+                            .targetAddress(resultDocumentDto.getAddressName())
+                            .targetLatitude(resultDocumentDto.getLatitude())
+                            .targetLongitude(resultDocumentDto.getLongitude())
+                            .distance(resultDocumentDto.getDistance() * 0.001) // km 단위
+                            .build())
+            .limit(MAX_SEARCH_COUNT) // 최대 3개
+            .collect(Collectors.toList()); // 리스트로
   }
 
 

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class DocumentDto {
 
   @JsonProperty("place_name")
-  private String placeName;
+  private String placeName; // 장소명, 업체명
 
   @JsonProperty("address_name")
   private String addressName; // 전체 주소
@@ -25,5 +25,5 @@ public class DocumentDto {
   private double longitude; // 경도
 
   @JsonProperty("distance")
-  private double distance;
+  private double distance; // 거리
 }

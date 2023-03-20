@@ -23,8 +23,8 @@
             <td th:text="${output.pharmacyName}"></td>
             <td th:text="${output.pharmacyAddress}"></td>
             <td th:text="${output.distance}"></td>
-            <td><a href="/" th:text="${output.directionUrl}"></a></td>
-            <td><a href="/" th:text="${output.roadViewUrl}"></a></td>
+            <td><a th:href="${output.directionUrl}" th:text="${output.directionUrl}"></a></td>
+            <td><a th:href="${output.roadViewUrl}" th:text="${output.roadViewUrl}"></a></td>
         </tr>
     </table>
     <script src="/js/lib/jquery.min.js"></script>

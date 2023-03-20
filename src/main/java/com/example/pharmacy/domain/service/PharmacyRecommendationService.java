@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,10 +23,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PharmacyRecommendationService {
-  private final DirectionRepository directionRepository;
 
   private final KakaoAddressSearchService kakaoAddressSearchService;
   private final DirectionService directionService;
+
+  private static final String ROAD_VIEW_BASE_URL = "https://map.kakao.com/link/roadview/";
+  private static final String DIRECTION_BASE_URL = "https://map.kakao.com/link/map/";
 
   public List<OutputDto> recommendPharmacyList(String address){
     KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(address);
@@ -50,11 +53,22 @@ public class PharmacyRecommendationService {
   }
 
   private OutputDto convertToOutputDto(Direction direction){
+
+    // 로드뷰
+    String params1 = String.join(",",String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
+    String result1 = UriComponentsBuilder.fromHttpUrl(ROAD_VIEW_BASE_URL + params1).toUriString();
+    log.info("roadView params: {}, url: {}", params1, result1);
+
+    // 지도
+    String params2 = String.join(",",direction.getTargetPharmacyName(),String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
+    String result2 = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params2).toUriString();
+    log.info("direction params: {}, url: {}", params2, result2);
+
     return OutputDto.builder()
             .pharmacyName(direction.getTargetPharmacyName())
             .pharmacyAddress(direction.getTargetAddress())
-            .directionUrl("todo") // TODO: 나중에 추가
-            .roadViewUrl("todo")
+            .directionUrl(result2)
+            .roadViewUrl(result1)
             .distance(String.format("%.2f km", direction.getDistance()))
             .build();
   }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Pharmacy Recommendation System</title>
@@ -19,15 +19,13 @@
             <th>길안내 링크</th>
             <th>로드뷰 링크</th>
         </tr>
-        {{#each outputFormList}}
-            <tr>
-                <td>{{pharmacyName}}</td>
-                <td>{{pharmacyAddress}}</td>
-                <td>{{distance}}</td>
-                <td><a href="{{directionUrl}}">{{directionUrl}}</a></td>
-                <td><a href="{{roadViewUrl}}">{{roadViewUrl}}</a></td>
-            </tr>
-        {{/each}}
+        <tr th:each="output:${outputFormList}">
+            <td th:text="${output.pharmacyName}"></td>
+            <td th:text="${output.pharmacyAddress}"></td>
+            <td th:text="${output.distance}"></td>
+            <td><a href="/" th:text="${output.directionUrl}"></a></td>
+            <td><a href="/" th:text="${output.roadViewUrl}"></a></td>
+        </tr>
     </table>
     <script src="/js/lib/jquery.min.js"></script>
     <script src="/js/lib/bootstrap.min.js"></script>

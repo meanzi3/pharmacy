@@ -35,6 +35,9 @@ dependencies {
     // handlebars
     implementation 'pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.4'
 
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
     // spock
     testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
     testImplementation 'org.spockframework:spock-spring:2.1-groovy-3.0' // spring과 같이 사용하기 위해

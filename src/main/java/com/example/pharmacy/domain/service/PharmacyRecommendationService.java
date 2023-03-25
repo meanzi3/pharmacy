@@ -6,10 +6,11 @@ import com.example.pharmacy.api.service.KakaoAddressSearchService;
 import com.example.pharmacy.direction.dto.OutputDto;
 import com.example.pharmacy.direction.entity.Direction;
 import com.example.pharmacy.direction.repository.DirectionRepository;
+import com.example.pharmacy.direction.service.Base62Service;
 import com.example.pharmacy.direction.service.DirectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,9 +27,12 @@ public class PharmacyRecommendationService {
 
   private final KakaoAddressSearchService kakaoAddressSearchService;
   private final DirectionService directionService;
+  private final Base62Service base62Service;
 
   private static final String ROAD_VIEW_BASE_URL = "https://map.kakao.com/link/roadview/";
-  private static final String DIRECTION_BASE_URL = "https://map.kakao.com/link/map/";
+
+  @Value("${pharmacy.recommendation.base.url}")
+  private String baseUrl;
 
   public List<OutputDto> recommendPharmacyList(String address){
     KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(address);
@@ -59,15 +63,11 @@ public class PharmacyRecommendationService {
     String result1 = UriComponentsBuilder.fromHttpUrl(ROAD_VIEW_BASE_URL + params1).toUriString();
     log.info("roadView params: {}, url: {}", params1, result1);
 
-    // 지도
-    String params2 = String.join(",",direction.getTargetPharmacyName(),String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
-    String result2 = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params2).toUriString();
-    log.info("direction params: {}, url: {}", params2, result2);
 
     return OutputDto.builder()
             .pharmacyName(direction.getTargetPharmacyName())
             .pharmacyAddress(direction.getTargetAddress())
-            .directionUrl(result2)
+            .directionUrl(baseUrl+base62Service.encodingDirectionId(direction.getId()))
             .roadViewUrl(result1)
             .distance(String.format("%.2f km", direction.getDistance()))
             .build();

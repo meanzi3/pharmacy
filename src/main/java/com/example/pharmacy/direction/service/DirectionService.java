@@ -12,6 +12,7 @@ import org.hibernate.mapping.Collection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.MathContext;
 import java.util.Collections;
@@ -32,6 +33,8 @@ public class DirectionService {
   private final DirectionRepository directionRepository;
   private final KakaoCategorySearchService kakaoCategorySearchService;
   private final Base62Service base62Service;
+  private static final String DIRECTION_BASE_URL = "https://map.kakao.com/link/map/";
+
 
   @Transactional
   public List<Direction> saveAll(List<Direction> directionList){
@@ -39,9 +42,15 @@ public class DirectionService {
     return directionRepository.saveAll(directionList);
   }
 
-  public Direction findById(String encodedId){
+  public String findDirectionUrlById(String encodedId){
     Long decodedId = base62Service.decodeDirectionId(encodedId);
-    return directionRepository.findById(decodedId).orElse(null);
+    Direction direction = directionRepository.findById(decodedId).orElse(null);
+
+    String params2 = String.join(",",direction.getTargetPharmacyName(),String.valueOf(direction.getTargetLatitude()), String.valueOf(direction.getTargetLongitude()));
+    String result2 = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params2).toUriString();
+
+    return result2;
+
   }
 
   public List<Direction> buildDirectionList(DocumentDto documentDto) {
